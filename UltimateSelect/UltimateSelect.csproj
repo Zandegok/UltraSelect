@@ -65,6 +65,7 @@
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -114,15 +115,25 @@
     <Compile Include="Helpers\ScreenCaptureHelper.cs" />
     <Compile Include="Helpers\UIAutomationHelper.cs" />
     <Compile Include="Helpers\Win32Interop.cs" />
-    <Compile Include="Models\ContextMenuContext.cs" />
+    <Compile Include="Models\ContextMenuData.cs" />
+    <Compile Include="Models\AppState.cs" />
     <Compile Include="Models\WindowInfo.cs" />
-    <Compile Include="Services\ContextMenuBuilder.cs" />
+    <Compile Include="Plugins\IMenuItemProviderLite.cs" />
+    <Compile Include="Plugins\MenuItemData.cs" />
+    <Compile Include="Plugins\IMenuItemProvider.cs" />
+    <Compile Include="Services\ApplicationStateService.cs" />
+    <Compile Include="Services\ContextMenuService.cs" />
+    <Compile Include="Services\TrayIconManager.cs" />
+    <Compile Include="Services\HotKeyManager.cs" />
     <Compile Include="Services\WindowManagerService.cs" />
     <Compile Include="Views\DrawingWindow.xaml.cs">
       <DependentUpon>DrawingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FrameWindow.xaml.cs">
       <DependentUpon>FrameWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HiddenWindow.xaml.cs">
+      <DependentUpon>HiddenWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OverlayWindow.xaml.cs">
       <DependentUpon>OverlayWindow.xaml</DependentUpon>
@@ -142,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\FrameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\HiddenWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

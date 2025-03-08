@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35825.156 d17.13
+VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltimateSelect", "UltimateSelect.csproj", "{0B1FAA32-D863-44DE-B1A9-F2C2BC7FA247}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsActionsPlugin", "..\WindowsActionsPlugin\WindowsActionsPlugin.csproj", "{2AA6137B-A965-4913-8A92-09CE81070626}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenFragmentActionsPlugin", "..\ScreenFragmentActionsPlugin\ScreenFragmentActionsPlugin.csproj", "{CBAC0073-E80A-4693-A4C3-DBD4E7F11B94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{0B1FAA32-D863-44DE-B1A9-F2C2BC7FA247}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B1FAA32-D863-44DE-B1A9-F2C2BC7FA247}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B1FAA32-D863-44DE-B1A9-F2C2BC7FA247}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AA6137B-A965-4913-8A92-09CE81070626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AA6137B-A965-4913-8A92-09CE81070626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AA6137B-A965-4913-8A92-09CE81070626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AA6137B-A965-4913-8A92-09CE81070626}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBAC0073-E80A-4693-A4C3-DBD4E7F11B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBAC0073-E80A-4693-A4C3-DBD4E7F11B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBAC0073-E80A-4693-A4C3-DBD4E7F11B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBAC0073-E80A-4693-A4C3-DBD4E7F11B94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -117,15 +117,18 @@
     <Compile Include="Helpers\Win32Interop.cs" />
     <Compile Include="Models\ContextMenuData.cs" />
     <Compile Include="Models\AppState.cs" />
+    <Compile Include="Models\PluginActionOutput.cs" />
     <Compile Include="Models\WindowInfo.cs" />
-    <Compile Include="Plugins\IMenuItemProviderLite.cs" />
+    <Compile Include="Plugins\IPluginActionProvider.cs" />
     <Compile Include="Plugins\MenuItemData.cs" />
-    <Compile Include="Plugins\IMenuItemProvider.cs" />
     <Compile Include="Services\ApplicationStateService.cs" />
     <Compile Include="Services\ContextMenuService.cs" />
     <Compile Include="Services\TrayIconManager.cs" />
     <Compile Include="Services\HotKeyManager.cs" />
     <Compile Include="Services\WindowManagerService.cs" />
+    <Compile Include="Views\BaseAppWindow.xaml.cs">
+      <DependentUpon>BaseAppWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DrawingWindow.xaml.cs">
       <DependentUpon>DrawingWindow.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,10 @@
       <DependentUpon>PinWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Themes\ContextMenuStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BaseAppWindow.xaml">
+      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DrawingWindow.xaml">

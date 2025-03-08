@@ -75,8 +75,7 @@ namespace UltimateSelect
             // Prepare minimal context data for building the context menu.
             var contextData = new ContextMenuData
             {
-                SelectedRegion = selection,
-                ExtraData = null
+                SelectedRegion = selection
             };
 
             // Asynchronously build the context menu from available plugin providers.

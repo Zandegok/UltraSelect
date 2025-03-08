@@ -1,29 +1,24 @@
-﻿using System.Collections.Generic;
+﻿// File: Services/ContextMenuService.cs
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using UltimateSelect.Models;
 using UltimateSelect.Plugins;
-using SW = System.Windows; // Alias for System.Windows
+using SW = System.Windows; // alias for System.Windows
 
 namespace UltimateSelect.Services
 {
     public class ContextMenuService
     {
         [ImportMany]
-        public IEnumerable<IMenuItemProviderLite> MenuItemProviders { get; set; }
+        public IEnumerable<IPluginActionProvider> PluginActionProviders { get; set; }
 
         public void ComposePlugins()
         {
-            string pluginFolder = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Plugins");
-            if (!Directory.Exists(pluginFolder))
-            {
-                Directory.CreateDirectory(pluginFolder);
-            }
-            var catalog = new DirectoryCatalog(pluginFolder);
+            // Compose plugins from a folder called "Plugins" next to the executable.
+            var catalog = new DirectoryCatalog(System.AppDomain.CurrentDomain.BaseDirectory + "\\Plugins");
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);
         }
@@ -31,35 +26,29 @@ namespace UltimateSelect.Services
         public async Task<SW.Controls.ContextMenu> BuildContextMenuAsync(ContextMenuData context)
         {
             var menu = new SW.Controls.ContextMenu();
-            var tasks = MenuItemProviders.Select(provider => provider.GetMenuItemsAsync(context));
-            var results = await Task.WhenAll(tasks);
-            foreach (var providerItems in results)
+
+            foreach (var provider in PluginActionProviders)
             {
-                foreach (var itemData in providerItems)
+                if (provider.IsApplicable(context))
                 {
-                    // Convert MenuItemData to a WPF MenuItem.
-                    var menuItem = new SW.Controls.MenuItem { Header = itemData.Header };
-                    // Optionally load icon if IconUri is provided.
-                    if (!string.IsNullOrEmpty(itemData.IconUri))
+                    var output = await provider.GetPluginActionAsync(context);
+                    // Create menu items from the dictionary of actions.
+                    foreach (var kvp in output.MenuActions)
                     {
-                        var image = new SW.Controls.Image
-                        {
-                            Source = new SW.Media.Imaging.BitmapImage(new System.Uri(itemData.IconUri, System.UriKind.RelativeOrAbsolute))
-                        };
-                        menuItem.Icon = image;
+                        var menuItem = new SW.Controls.MenuItem { Header = kvp.Key };
+                        menuItem.Click += (s, e) => kvp.Value.Invoke();
+                        menu.Items.Add(menuItem);
                     }
-                    // Hook up command logic, e.g., using a DelegateCommand (not shown here) or simple event handler.
-                    menuItem.Click += (s, e) =>
-                    {
-                        // Execute command based on CommandName/Parameter.
-                    };
-                    menu.Items.Add(menuItem);
+                    // Optionally, you might also register the window type and parameters with a window manager service.
+                    // For instance:
+                    // WindowManagerService.Instance.RegisterPluginWindow(output.WindowType, output.InitializationParameters);
                 }
             }
 
+            // When the context menu is closed, you may perform cleanup.
             menu.Closed += (s, e) =>
             {
-                ApplicationStateService.Instance.SetState(AppState.Idle);
+                // Cleanup code here (if needed) and update global state.
             };
 
             return menu;

@@ -57,8 +57,8 @@ namespace UltimateSelect.Views
                 double height = Math.Abs(endPoint.Y - _startPoint.Value.Y);
                 Rect selectedRect = new Rect(x, y, width, height);
                 ReleaseMouseCapture();
-                SelectionCompleted?.Invoke(this, selectedRect);
                 Close();
+                SelectionCompleted?.Invoke(this, selectedRect);
             }
         }
     }

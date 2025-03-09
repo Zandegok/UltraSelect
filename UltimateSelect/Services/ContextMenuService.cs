@@ -1,12 +1,11 @@
-﻿// File: Services/ContextMenuService.cs
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using UltimateSelect.Models;
 using UltimateSelect.Plugins;
-using SW = System.Windows; // alias for System.Windows
+using SW = System.Windows;
 
 namespace UltimateSelect.Services
 {
@@ -17,9 +16,19 @@ namespace UltimateSelect.Services
 
         public void ComposePlugins()
         {
-            // Compose plugins from a folder called "Plugins" next to the executable.
-            var catalog = new DirectoryCatalog(System.AppDomain.CurrentDomain.BaseDirectory + "\\Plugins");
-            var container = new CompositionContainer(catalog);
+            // Build the path to the Plugins folder next to the executable.
+            string pluginsPath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+            if (!System.IO.Directory.Exists(pluginsPath))
+            {
+                System.IO.Directory.CreateDirectory(pluginsPath);
+            }
+
+            // Use an AggregateCatalog to include both the host assembly and the Plugins folder.
+            var aggregateCatalog = new AggregateCatalog();
+            aggregateCatalog.Catalogs.Add(new AssemblyCatalog(typeof(ContextMenuService).Assembly));
+            aggregateCatalog.Catalogs.Add(new DirectoryCatalog(pluginsPath));
+
+            var container = new CompositionContainer(aggregateCatalog);
             container.ComposeParts(this);
         }
 
@@ -32,23 +41,19 @@ namespace UltimateSelect.Services
                 if (provider.IsApplicable(context))
                 {
                     var output = await provider.GetPluginActionAsync(context);
-                    // Create menu items from the dictionary of actions.
+                    // Iterate over the list of KeyValuePair items.
                     foreach (var kvp in output.MenuActions)
                     {
                         var menuItem = new SW.Controls.MenuItem { Header = kvp.Key };
                         menuItem.Click += (s, e) => kvp.Value.Invoke();
                         menu.Items.Add(menuItem);
                     }
-                    // Optionally, you might also register the window type and parameters with a window manager service.
-                    // For instance:
-                    // WindowManagerService.Instance.RegisterPluginWindow(output.WindowType, output.InitializationParameters);
                 }
             }
 
-            // When the context menu is closed, you may perform cleanup.
             menu.Closed += (s, e) =>
             {
-                // Cleanup code here (if needed) and update global state.
+                // Cleanup code if needed.
             };
 
             return menu;

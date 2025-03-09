@@ -1,24 +1,15 @@
-﻿// File: Plugins/PluginActionOutput.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace UltimateSelect.Models
 {
     public class PluginActionOutput
     {
-        /// <summary>
-        /// A dictionary of menu items. Each key is the menu item label and its value is the action (lambda) to execute.
-        /// </summary>
-        public Dictionary<string, Action> MenuActions { get; set; } = new Dictionary<string, Action>();
+        // Using a list of key/value pairs to allow duplicate keys.
+        public List<KeyValuePair<string, Action>> MenuActions { get; set; } = new List<KeyValuePair<string, Action>>();
 
-        /// <summary>
-        /// The type of window to be instantiated. Must inherit from BaseAppWindow.
-        /// </summary>
+        // Optionally, you might include additional properties:
         public Type WindowType { get; set; }
-
-        /// <summary>
-        /// A dictionary of initialization parameters for the window.
-        /// </summary>
-        public Dictionary<string, object> InitializationParameters { get; set; } = new Dictionary<string, object>();
+        public object InitializationParameters { get; set; }
     }
 }

@@ -1,55 +1,45 @@
-﻿// File: SamplePlugins/WindowsActionsPlugin.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using System.Windows; // For MessageBox
 using UltimateSelect.Models;
 using UltimateSelect.Plugins;
 
-namespace SamplePlugins
+namespace UltimateSelect.Plugins
 {
-    public class WindowsActionsPlugin : IPluginActionProvider
+    // Export the plugin so MEF can discover it.
+    [Export(typeof(IPluginActionProvider))]
+    public class WindowPlugin : IPluginActionProvider
     {
         public bool IsApplicable(ContextMenuData context)
         {
-            // Applicable only if there is at least one window.
-            return context.Windows != null && context.Windows.Any();
+            // For demo purposes, this plugin is always applicable.
+            return true;
         }
 
         public async Task<PluginActionOutput> GetPluginActionAsync(ContextMenuData context)
         {
-            // Simulate asynchronous work.
-            await Task.Yield();
-
             var output = new PluginActionOutput();
 
-            // Define menu actions.
-            output.MenuActions.Add("Minimize All", () =>
-            {
-                // Iterate over windows and minimize them.
-                foreach (var win in context.Windows)
-                {
-                    // Your minimization logic here, e.g.:
-                    // Win32Interop.ShowWindow(win.Handle, Win32Interop.SW_MINIMIZE);
-                }
-            });
-            output.MenuActions.Add("Close All", () =>
-            {
-                foreach (var win in context.Windows)
-                {
-                    // Your close window logic here.
-                }
-            });
+            // Example: Adding two actions with the same key ("Activate: Калькулятор")
+            string actionKey = "Activate: Калькулятор";
+            output.MenuActions.Add(new KeyValuePair<string, Action>(actionKey, OpenCalculator));
+            output.MenuActions.Add(new KeyValuePair<string, Action>(actionKey, OpenCalculatorAdvanced));
 
-            // For each individual window, add an action.
-            foreach (var win in context.Windows)
-            {
-                output.MenuActions.Add($"Activate: {win.Title}", () =>
-                {
-                    // Logic to bring this window to the foreground.
-                });
-            }
+            // Simulate async operation
+            await Task.CompletedTask;
             return output;
+        }
+
+        private void OpenCalculator()
+        {
+            MessageBox.Show("Calculator opened (simple).", "Calculator", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void OpenCalculatorAdvanced()
+        {
+            MessageBox.Show("Calculator opened (advanced).", "Calculator", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

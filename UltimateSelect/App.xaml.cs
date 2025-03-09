@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Extensions.Configuration;
 using UltimateSelect.Models;               // Contains AppState and ContextMenuData.
 using UltimateSelect.Services;             // Contains ApplicationStateService, HotKeyManager, TrayIconManager, ContextMenuService.
 using UltimateSelect.Views;                // Contains HiddenWindow and OverlayWindow.
@@ -16,9 +17,17 @@ namespace UltimateSelect
 		private HiddenWindow _hiddenWindow;
 		private ContextMenuService _contextMenuService;
 
+		internal static IConfiguration Config { get; private set; }
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+			Config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        // Use the config file to get a connection string.
+        string? myConnectionString = Config.GetConnectionString("database");
 
 			// Initialize global state to Idle.
 			ApplicationStateService.Instance.SetState(AppState.Idle);

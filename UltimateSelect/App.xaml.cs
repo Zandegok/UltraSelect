@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
-using UltimateSelect.Models;               // Contains AppState and ContextMenuData.
-using UltimateSelect.Services;             // Contains ApplicationStateService, HotKeyManager, TrayIconManager, ContextMenuService.
-using UltimateSelect.Views;                // Contains HiddenWindow and OverlayWindow.
-using SW = System.Windows;                // Alias for System.Windows.
-using SWForms = System.Windows.Forms;     // Alias for System.Windows.Forms.
+using UltimateSelect.Models;
+using UltimateSelect.Services;
+using UltimateSelect.Views;
+using SW = System.Windows;
+using SWForms = System.Windows.Forms;
 
 namespace UltimateSelect
 {
@@ -22,35 +22,26 @@ namespace UltimateSelect
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+
 			Config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
+				 .AddJsonFile("appsettings.json")
+				 .Build();
 
-        // Use the config file to get a connection string.
-        string? myConnectionString = Config.GetConnectionString("database");
-
-			// Initialize global state to Idle.
 			ApplicationStateService.Instance.SetState(AppState.Idle);
 
-			// Create and initialize the system tray icon.
 			_trayIconManager = new TrayIconManager();
 
-			// Create the hidden window for hotkey messages.
 			_hiddenWindow = new HiddenWindow();
 			_hiddenWindow.Show();
-			_hiddenWindow.Hide(); // Remains hidden but provides an Hwnd.
+			_hiddenWindow.Hide(); // Hidden but provides an HWND.
 
-			// Initialize HotKeyManager using the hidden window.
 			_hotKeyManager = new HotKeyManager(_hiddenWindow);
 			_hotKeyManager.HotKeyPressed += OnHotKeyPressed;
-			// Register a default hotkey (Ctrl+Alt+S). This can later be made user configurable.
 			_hotKeyManager.RegisterHotKey(Modifiers.Control | Modifiers.Alt, SWForms.Keys.S, "ActivationHotkey");
 
-			// Initialize the ContextMenuService and load available plugins.
 			_contextMenuService = new ContextMenuService();
 			_contextMenuService.ComposePlugins();
 
-			// Optionally, subscribe to state changes to log or update UI.
 			ApplicationStateService.Instance.StateChanged += (s, newState) =>
 			{
 				System.Diagnostics.Debug.WriteLine($"State changed to: {newState}");
@@ -59,7 +50,6 @@ namespace UltimateSelect
 
 		private void OnHotKeyPressed(object sender, HotKeyEventArgs e)
 		{
-			// Only trigger selection if the app is in the Idle state.
 			if(ApplicationStateService.Instance.CurrentState == AppState.Idle)
 			{
 				ApplicationStateService.Instance.SetState(AppState.OverlayActive);
@@ -72,7 +62,6 @@ namespace UltimateSelect
 			var overlay = new OverlayWindow();
 			overlay.SelectionCompleted += async (s, selection) =>
 			{
-				// Once the user completes selection, transition to the context menu state.
 				ApplicationStateService.Instance.SetState(AppState.ContextMenuActive);
 				await ProcessSelectionAsync(selection);
 			};
@@ -81,27 +70,36 @@ namespace UltimateSelect
 
 		private async Task ProcessSelectionAsync(SW.Rect selection)
 		{
-			// Prepare minimal context data for building the context menu.
+			// Prepare context data for building the context menu.
 			var contextData = new ContextMenuData
 			{
 				SelectedRegion = selection,
 				Windows = new WindowManagerService().GetWindowsInRegion(selection)
 			};
 
-			// Asynchronously build the context menu from available plugin providers.
+			// Build the context menu asynchronously.
 			var contextMenu = await _contextMenuService.BuildContextMenuAsync(contextData);
-
-			// Position the context menu at the center of the selected region.
 			contextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Absolute;
-			contextMenu.HorizontalOffset = selection.X + selection.Width / 2;
-			contextMenu.VerticalOffset = selection.Y + selection.Height / 2;
+			// Place the context menu at the end of the selection (bottom-right corner).
+			contextMenu.HorizontalOffset = selection.X + selection.Width;
+			contextMenu.VerticalOffset = selection.Y + selection.Height;
 			contextMenu.IsOpen = true;
 
-			// When the context menu is closed, return to the Idle state.
+			// Create the frame window that encloses the selected region.
+			var frameWindow = new FrameWindow(selection);
+			frameWindow.Show();
+
+			// When the context menu is closed, close the frame window.
 			contextMenu.Closed += (s, e) =>
 			{
+				if(frameWindow.IsVisible)
+				{
+					frameWindow.Close();
+				}
 				ApplicationStateService.Instance.Reset();
 			};
+
+			await Task.CompletedTask;
 		}
 
 		protected override void OnExit(ExitEventArgs e)

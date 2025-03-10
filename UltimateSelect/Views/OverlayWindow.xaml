@@ -5,7 +5,8 @@
         AllowsTransparency="True"
         Background="#40FFFFFF"
         Topmost="True"
-        ShowInTaskbar="False">
+        ShowInTaskbar="False"
+        WindowState="Maximized">
     <Canvas x:Name="SelectionCanvas">
         <Rectangle x:Name="SelectionRectangle" Stroke="Blue" StrokeThickness="2" Visibility="Collapsed"/>
     </Canvas>

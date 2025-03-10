@@ -1,31 +1,43 @@
-﻿<!-- File: Views/BaseAppWindow.xaml -->
-<Window x:Class="UltimateSelect.Views.BaseAppWindow"
+﻿<Window x:Class="UltimateSelect.Views.BaseAppWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="Base App Window"
         WindowStyle="None"
-        AllowsTransparency="True"
-        Background="Transparent"
+        AllowsTransparency="False"
         ResizeMode="CanResize"
         MinWidth="300" MinHeight="200">
-    <Border BorderBrush="White" BorderThickness="1" Background="White">
-        <Grid>
+    <!-- Use WindowChrome to remove the system chrome and enable custom non-client behavior -->
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="30"
+                          ResizeBorderThickness="5"
+                          GlassFrameThickness="0"
+                          UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+    <!-- Wrap everything in a Border to simulate a thin non-client frame -->
+    <Border BorderBrush="Gray" BorderThickness="1">
+        <Grid x:Name="RootGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <!-- Custom Title Bar -->
-            <Grid x:Name="TitleBar" Background="DarkGray" Grid.Row="0">
-                <TextBlock x:Name="WindowTitle" Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center" Margin="10,0"/>
+            <!-- Title Bar with buttons -->
+            <Grid x:Name="TitleBar" Background="DarkGray" Grid.Row="0"
+            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock x:Name="WindowTitle" 
+                   Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                   VerticalAlignment="Center" Margin="10,0"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="PinButton" Content="📌" Width="30" Height="30" Visibility="Visible"/>
-                    <Button x:Name="MinimizeButton" Content="―" Width="30" Height="30" Visibility="Visible"/>
-                    <Button x:Name="MaximizeButton" Content="☐" Width="30" Height="30" Visibility="Visible"/>
-                    <Button x:Name="CloseButton" Content="X" Width="30" Height="30" Visibility="Visible"/>
+                    <Button x:Name="PinButton" Content="📌" Width="30" Height="30" Click="PinButton_Click"/>
+                    <Button x:Name="MinimizeButton" Content="―" Width="30" Height="30" Click="MinimizeButton_Click"/>
+                    <Button x:Name="MaximizeButton" Content="☐" Width="30" Height="30" Click="MaximizeButton_Click"/>
+                    <Button x:Name="CloseButton" Content="X" Width="30" Height="30" Click="CloseButton_Click"/>
                 </StackPanel>
             </Grid>
-            <!-- Content Area -->
-            <ContentPresenter x:Name="WindowContent" Grid.Row="1"/>
+            <!-- Content area (client area) that will be aligned with the selected rectangle -->
+            <Canvas x:Name="ContentCanvas" Grid.Row="1">
+                <Grid x:Name="ContentPanel" Background="White"/>
+            </Canvas>
         </Grid>
     </Border>
 </Window>
